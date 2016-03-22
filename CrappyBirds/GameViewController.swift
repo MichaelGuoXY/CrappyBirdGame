@@ -23,7 +23,14 @@ class GameViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        // start game
+        startGame()
+        // pause the game at the beginning
+        skView.paused = true
+        showButtonsAnimation(true)
+    }
+    
+    func startGame() {
         if let scene = GameScene(fileNamed:"GameScene") {
             // Configure the view.
             skView = self.view as! SKView
@@ -37,6 +44,10 @@ class GameViewController: UIViewController {
             /* Set the scale mode to scale to fit the window */
             scene.scaleMode = .AspectFill
             
+            // set scene's parent view controller to this view controller
+            scene.parentViewController = self
+            
+            // present scene
             skView.presentScene(scene)
         }
         // bring the buttons to the front
@@ -46,12 +57,22 @@ class GameViewController: UIViewController {
         self.view.bringSubviewToFront(settingsButton)
         self.view.bringSubviewToFront(pauseButton)
         
+        // hide all buttons
+        self.rankListButton.hidden = true
+        self.settingsButton.hidden = true
+        self.restartButton.hidden = true
+        self.playButton.hidden = true
+        self.pauseButton.hidden = true
+        
         // set the score display area
         scoreDisplayer.setTargetForDisplay(scoreDisplayView)
-        
-        // pause the game at the beginning
-        skView.paused = true
-        showButtonsAnimation()
+    }
+    
+    func countDownBeforeStart() {
+        scoreDisplayer.displayAnyScore(3)
+        scoreDisplayer.displayAnyScore(2)
+        scoreDisplayer.displayAnyScore(1)
+        scoreDisplayer.displayAnyScore(0)
     }
     
     override func shouldAutorotate() -> Bool {
@@ -76,18 +97,20 @@ class GameViewController: UIViewController {
     }
     
     @IBAction func restartButtonClicked(sender: UIButton) {
-        
+        startGame()
+        hideButtonsAnimation()
+        countDownBeforeStart()
     }
     
     @IBAction func playButtonClicked(sender: UIButton) {
+        // hide other buttons and show pause button
+        hideButtonsAnimation()
         // un-pause the game
         if skView.paused {
             skView.paused = false
         }
-        // hide other buttons and show pause button
-        hideButtonsAnimation()
-        // show score
-        scoreDisplayer.displayAnyScore(123456789)
+        // count down before start
+        countDownBeforeStart()
     }
     
     @IBAction func rankListButtonClicked(sender: UIButton) {
@@ -101,7 +124,7 @@ class GameViewController: UIViewController {
     @IBAction func pauseButtonClicked(sender: UIButton) {
         // pause the game
         skView.paused = true
-        showButtonsAnimation()
+        showButtonsAnimation(true)
     }
     
     func hideButtonsAnimation() {
@@ -130,7 +153,7 @@ class GameViewController: UIViewController {
         })
     }
     
-    func showButtonsAnimation() {
+    func showButtonsAnimation(startOrRestart : Bool) {
         
         // show the pause button
         self.rankListButton.transform = CGAffineTransformMakeScale(0.1, 0.1)
@@ -140,8 +163,12 @@ class GameViewController: UIViewController {
         // show other buttons
         rankListButton.hidden = false
         settingsButton.hidden = false
-        restartButton.hidden = false
-        playButton.hidden = false
+        if !startOrRestart {
+            restartButton.hidden = false
+        }
+        else {
+            playButton.hidden = false
+        }
         
         // animation with buttons
         UIView.animateWithDuration(1.0,

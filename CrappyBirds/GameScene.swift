@@ -13,6 +13,8 @@ func randomX(firstNum: CGFloat, secondNum: CGFloat) -> CGFloat {
 }
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
+    var score = Int(0)
+    var parentViewController : GameViewController!
     
     var background : SKSpriteNode!
     
@@ -26,7 +28,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var floors = [SKSpriteNode]()
     
     var pipes = [SKSpriteNode]()
-    let pipeSpacing = CGFloat(800)
+    let pipeSpacing = CGFloat(400)
     
     let BIRD_CAT  : UInt32 = 0x1 << 0;
     let FLOOR_CAT : UInt32 = 0x1 << 1;
@@ -45,6 +47,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let removeBird = SKAction.removeFromParent()
         let actionSeq = SKAction.sequence([explosion, removeBird])
         bird.runAction(actionSeq)
+        
+        parentViewController.showButtonsAnimation(false)
     }
     
     override func didMoveToView(view: SKView) {
@@ -117,9 +121,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             bottomPipe.size.height *= 0.5
             
             bottomPipe.position.y = CGRectGetMaxY(floors[i].frame) +
-                0.5 * bottomPipe.size.height
+                0.5 * bottomPipe.size.height - 100
             bottomPipeY = bottomPipe.position.y
-            bottomPipe.position.x = CGFloat(i + 1) * pipeSpacing
+            bottomPipe.position.x = CGFloat(Float(i) + 2.0) * pipeSpacing
             bottomPipe.physicsBody = SKPhysicsBody(texture: bottomPipe.texture!, size: bottomPipe.size)
             bottomPipe.physicsBody?.dynamic = false
             bottomPipe.physicsBody?.categoryBitMask = PIPE_CAT
@@ -133,10 +137,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             topPipe.size.height *= 0.5
             
             topPipe.position.y = CGRectGetMaxY(frame) -
-                0.5 * topPipe.size.height
+                0.5 * topPipe.size.height + 100
             topPipeY = topPipe.position.y
             
-            topPipe.position.x = CGFloat(i + 1) * pipeSpacing
+            topPipe.position.x = CGFloat(Float(i) + 2.0) * pipeSpacing
             topPipe.physicsBody = SKPhysicsBody(texture: topPipe.texture!, size: topPipe.size)
             topPipe.physicsBody?.dynamic = false
             topPipe.physicsBody?.categoryBitMask = PIPE_CAT
@@ -167,7 +171,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
             
             // Move pipes
-            let pipeSpeed = CGFloat(1)
+            let pipeSpeed = CGFloat(4)
             
             for i in 0 ..< 4 {
                 let pipe = pipes[i]
@@ -175,11 +179,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 
                 if pipe.position.x < -pipe.size.width/2 {
                     pipe.position.x += 2 * pipeSpacing
-                    
                     if(i % 2 == 0) { // bottom pipe
-                        pipe.position.y = randomX(bottomPipeY - 300, secondNum: bottomPipeY)
+                        pipe.position.y = randomX(bottomPipeY - 100, secondNum: bottomPipeY + 50)
                     } else { // top pipes
-                        pipe.position.y = randomX(topPipeY, secondNum: topPipeY + 300)
+                        pipe.position.y = randomX(topPipeY - 50, secondNum: topPipeY + 100)
+                    }
+                    
+                }
+                
+                // get score 
+                if abs(pipe.position.x - bird.position.x) < 0.1 {
+                    // top and bottom count once.
+                    if i % 2 == 0 { // bottom pipe, score + 1
+                        score++
+                        parentViewController.scoreDisplayer.displayAnyScore(score)
                     }
                 }
             }
