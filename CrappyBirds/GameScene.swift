@@ -48,7 +48,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let actionSeq = SKAction.sequence([explosion, removeBird])
         bird.runAction(actionSeq)
         
-        parentViewController.showButtonsAnimation(false)
+        //parentViewController.showButtonsAnimation(false)
+        // show enterPlayerInfoView and hide pause button
+        parentViewController.pauseButton.hidden = true
+        parentViewController.scoreDisplayer.clearDisplay()
+        parentViewController.enterPlayerInfoView.viewWillShowUp(score)
     }
     
     override func didMoveToView(view: SKView) {

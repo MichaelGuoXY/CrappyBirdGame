@@ -35,6 +35,18 @@ class ScoreDisplay: NSObject {
         evenNumCentreTopY = displayFrame.origin.y
     }
     
+    // must init with UITableViewCell
+    func setTargetForDisplayWithCell(cell : UITableViewCell) {
+        displayView = cell.contentView
+        displayFrame = cell.contentView.bounds
+        imageHeight = displayFrame.height
+        imageWidth = imageHeight / 1.9
+        oddNumCentreTopX = (cell.imageView?.bounds.origin.x)! + (cell.imageView?.bounds.width)! / 2 - imageWidth / 2
+        oddNumCentreTopY = cell.imageView?.bounds.origin.y
+        evenNumCentreTopX = (cell.imageView?.bounds.origin.x)! + (cell.imageView?.bounds.width)! / 2
+        evenNumCentreTopY = cell.imageView?.bounds.origin.y
+    }
+    
     // change start score
     func changeStartScore(startingScore : Int) {
         startScore = startingScore
@@ -59,6 +71,10 @@ class ScoreDisplay: NSObject {
             count++
         }
         return count
+    }
+    
+    func clearDisplay() {
+        removeAllSubviewsFrom(displayView)
     }
     
     // remove subviews from a UIView
@@ -149,5 +165,6 @@ class ScoreDisplay: NSObject {
         imageView.contentMode = .ScaleAspectFit
         imageView.frame = frame
         displayView.addSubview(imageView)
+        displayView.bringSubviewToFront(imageView)
     }
 }

@@ -17,12 +17,16 @@ class GameViewController: UIViewController {
     @IBOutlet weak var settingsButton: UIButton!
     @IBOutlet weak var pauseButton: UIButton!
     @IBOutlet weak var scoreDisplayView: UIView!
+    @IBOutlet weak var enterPlayerInfoView: EnterPlayerInfoView!
     
     var skView : SKView!
+    // init ScoreDisplay and instantiate an object scoreDIsplayer
     let scoreDisplayer = ScoreDisplay()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        // set enterPlayerInfoView
+        enterPlayerInfoView.setsParentViewController(self)
         // start game
         startGame()
         // pause the game at the beginning
@@ -56,6 +60,7 @@ class GameViewController: UIViewController {
         self.view.bringSubviewToFront(rankListButton)
         self.view.bringSubviewToFront(settingsButton)
         self.view.bringSubviewToFront(pauseButton)
+        self.view.bringSubviewToFront(enterPlayerInfoView)
         
         // hide all buttons
         self.rankListButton.hidden = true
@@ -63,6 +68,8 @@ class GameViewController: UIViewController {
         self.restartButton.hidden = true
         self.playButton.hidden = true
         self.pauseButton.hidden = true
+        // hide the enterPlayerInfo View
+        self.enterPlayerInfoView.hidden = true
         
         // set the score display area
         scoreDisplayer.setTargetForDisplay(scoreDisplayView)
